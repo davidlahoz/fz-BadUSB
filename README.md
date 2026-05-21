@@ -22,7 +22,7 @@ To run the web UI locally:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/davidlahoz/badusb-flipper-payload-generator.git
+   git clone https://github.com/davidlahoz/fz-BadUSB.git
 1. **Clone the repository**:
    Navigate to the project folder and open index.html
 
