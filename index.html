@@ -4,15 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="theme-color" content="#0a0806"/>
+    <meta name="description" content="Visual BadUSB payload generator for the Flipper Zero — compose DuckyScript commands in the browser and download them as a .txt payload."/>
     <title>FZ.BadUSB — Payload Generator</title>
+    <link rel="icon" href="logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap">
     <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
     <header>
         <div class="header-container">
-            <img src="logo.png" alt="Flipper Zero logo" class="header-logo">
+            <img src="logo.png" alt="Flipper Zero logo" class="header-logo" width="64" height="64">
             <div class="title-group">
                 <span class="eyebrow">Flipper Zero · BadUSB Toolkit</span>
                 <h1>FZ.<span class="accent">BadUSB</span><span class="blink" aria-hidden="true"></span></h1>
@@ -28,7 +32,7 @@
                 <div class="panel-head">
                     <span class="tag">[ CMD ]</span>
                     <h2>Command Library</h2>
-                    <span class="meta" id="cmd-count">15 modules</span>
+                    <span class="meta" id="cmd-count">14 modules</span>
                 </div>
                 <div class="panel-body">
                     <div class="commands-grid">
@@ -37,7 +41,7 @@
                             <div class="command-group">
                                 <h3 data-idx="01">ID (VID/PID)</h3>
                                 <p class="info-text">Set USB HID VID/PID.</p>
-                                <button class="primary-btn" onclick="addCommand('ID 05ac:021e Apple:Keyboard')">Add VID/PID · macOS</button>
+                                <button class="primary-btn" data-cmd="ID 05ac:021e Apple:Keyboard">Add VID/PID · macOS</button>
                             </div>
 
                             <div class="command-group">
@@ -47,7 +51,7 @@
                                 <button class="primary-btn" id="add-remark-btn">Add REM</button>
                                 <p class="info-text">Add multiple REM lines at once.</p>
                                 <textarea id="bulkRemarkInput" rows="2" placeholder="Enter multiple remarks (one per line)"></textarea>
-                                <button id="bulkRemarkBtn" class="primary-btn">Add Multiple REM</button>
+                                <button class="primary-btn" id="bulkRemarkBtn">Add Multiple REM</button>
                             </div>
 
                             <div class="command-group">
@@ -63,10 +67,10 @@
                             <div class="command-group">
                                 <h3 data-idx="04">Delays</h3>
                                 <p class="info-text">DELAY — wait in ms (1 sec = 1000 ms). Minimum 100.</p>
-                                <input id="delay-input" type="number" value="1000" min="100" step="100">
+                                <input id="delay-input" type="number" value="1000" min="100" step="100" aria-label="Delay in milliseconds">
                                 <button class="primary-btn" id="add-delay-btn">Add DELAY</button>
                                 <p class="info-text">DEFAULT_DELAY — applied between every command.</p>
-                                <input id="default-delay-input" type="number" value="50" min="0" step="10">
+                                <input id="default-delay-input" type="number" value="50" min="0" step="10" aria-label="Default delay in milliseconds">
                                 <button class="primary-btn" id="add-default-delay-btn">Add DEFAULT_DELAY</button>
                                 <p class="info-text">Wait for a Flipper button press.</p>
                                 <button class="primary-btn" id="add-button-press-btn">Wait For Center Button</button>
@@ -75,11 +79,11 @@
                             <div class="command-group">
                                 <h3 data-idx="05">Misc. Commands</h3>
                                 <p class="info-text">REPEAT — repeat the next command N times.</p>
-                                <input id="repeat-input" type="number" placeholder="N times" min="1">
-                                <button class="primary-btn" onclick="addRepeat()">Add REPEAT</button>
+                                <input id="repeat-input" type="number" placeholder="N times" min="1" aria-label="Number of repeats">
+                                <button class="primary-btn" id="add-repeat-btn">Add REPEAT</button>
                                 <p class="info-text">ALTCHAR — insert an Alt char code.</p>
-                                <input id="altchar-input" type="text" placeholder="ALTCHAR code">
-                                <button class="primary-btn" onclick="addAltChar()">Add ALTCHAR</button>
+                                <input id="altchar-input" type="text" placeholder="ALTCHAR code" aria-label="Alt character code">
+                                <button class="primary-btn" id="add-altchar-btn">Add ALTCHAR</button>
                             </div>
                         </div>
 
@@ -88,11 +92,11 @@
                             <div class="command-group">
                                 <h3 data-idx="06">Modifier Keys</h3>
                                 <div class="btn-group">
-                                    <button onclick="addCommand('GUI')">GUI</button>
-                                    <button onclick="addCommand('WINDOWS')">WIN</button>
-                                    <button onclick="addCommand('SHIFT')">SHIFT</button>
-                                    <button onclick="addCommand('CTRL')">CTRL</button>
-                                    <button onclick="addCommand('ALT')">ALT</button>
+                                    <button data-cmd="GUI">GUI</button>
+                                    <button data-cmd="WINDOWS">WIN</button>
+                                    <button data-cmd="SHIFT">SHIFT</button>
+                                    <button data-cmd="CTRL">CTRL</button>
+                                    <button data-cmd="ALT">ALT</button>
                                 </div>
                             </div>
 
@@ -100,11 +104,11 @@
                                 <h3 data-idx="07">Combo Keys</h3>
                                 <p class="info-text">Windows: CTRL+ALT = ALTGr. ALT+WIN ≡ ALT+GUI, WIN+SHIFT ≡ GUI+SHIFT.</p>
                                 <div class="btn-group">
-                                    <button onclick="addCommand('CTRL-ALT')">CTRL-ALT</button>
-                                    <button onclick="addCommand('CTRL-SHIFT')">CTRL-SHIFT</button>
-                                    <button onclick="addCommand('ALT-SHIFT')">ALT-SHIFT</button>
-                                    <button onclick="addCommand('ALT-GUI')">ALT-GUI</button>
-                                    <button onclick="addCommand('GUI-SHIFT')">GUI-SHIFT</button>
+                                    <button data-cmd="CTRL-ALT">CTRL-ALT</button>
+                                    <button data-cmd="CTRL-SHIFT">CTRL-SHIFT</button>
+                                    <button data-cmd="ALT-SHIFT">ALT-SHIFT</button>
+                                    <button data-cmd="ALT-GUI">ALT-GUI</button>
+                                    <button data-cmd="GUI-SHIFT">GUI-SHIFT</button>
                                 </div>
                             </div>
 
@@ -112,12 +116,12 @@
                                 <h3 data-idx="08">Arrow Keys</h3>
                                 <div class="arrow-keys">
                                     <div class="arrow-row">
-                                        <button onclick="addCommand('UPARROW')" aria-label="Up">↑</button>
+                                        <button data-cmd="UPARROW" aria-label="Up">↑</button>
                                     </div>
                                     <div class="arrow-row">
-                                        <button onclick="addCommand('LEFTARROW')" aria-label="Left">←</button>
-                                        <button onclick="addCommand('DOWNARROW')" aria-label="Down">↓</button>
-                                        <button onclick="addCommand('RIGHTARROW')" aria-label="Right">→</button>
+                                        <button data-cmd="LEFTARROW" aria-label="Left">←</button>
+                                        <button data-cmd="DOWNARROW" aria-label="Down">↓</button>
+                                        <button data-cmd="RIGHTARROW" aria-label="Right">→</button>
                                     </div>
                                 </div>
                             </div>
@@ -126,19 +130,19 @@
                                 <h3 data-idx="09">Media Keys</h3>
                                 <div class="media-layout">
                                     <div class="media-row">
-                                        <button onclick="addCommand('MEDIA PREV_TRACK')" aria-label="Previous">⏮</button>
-                                        <button onclick="addCommand('MEDIA PLAY')" aria-label="Play">▶</button>
-                                        <button onclick="addCommand('MEDIA NEXT_TRACK')" aria-label="Next">⏭</button>
+                                        <button data-cmd="MEDIA PREV_TRACK" aria-label="Previous">⏮</button>
+                                        <button data-cmd="MEDIA PLAY" aria-label="Play">▶</button>
+                                        <button data-cmd="MEDIA NEXT_TRACK" aria-label="Next">⏭</button>
                                     </div>
                                     <div class="media-row">
-                                        <button onclick="addCommand('MEDIA STOP')" aria-label="Stop">⏹</button>
-                                        <button onclick="addCommand('MEDIA PAUSE')" aria-label="Pause">⏸</button>
-                                        <button onclick="addCommand('MEDIA MUTE')" aria-label="Mute">🔇</button>
+                                        <button data-cmd="MEDIA STOP" aria-label="Stop">⏹</button>
+                                        <button data-cmd="MEDIA PAUSE" aria-label="Pause">⏸</button>
+                                        <button data-cmd="MEDIA MUTE" aria-label="Mute">🔇</button>
                                     </div>
                                     <div class="media-row">
-                                        <button onclick="addCommand('MEDIA VOLUME_DOWN')" aria-label="Volume down">VOL −</button>
+                                        <button data-cmd="MEDIA VOLUME_DOWN" aria-label="Volume down">VOL −</button>
                                         <div class="spacer"></div>
-                                        <button onclick="addCommand('MEDIA VOLUME_UP')" aria-label="Volume up">VOL +</button>
+                                        <button data-cmd="MEDIA VOLUME_UP" aria-label="Volume up">VOL +</button>
                                     </div>
                                 </div>
                             </div>
@@ -146,18 +150,18 @@
                             <div class="command-group">
                                 <h3 data-idx="10">Function Keys</h3>
                                 <div class="function-keys">
-                                    <button onclick="addCommand('F1')">F1</button>
-                                    <button onclick="addCommand('F2')">F2</button>
-                                    <button onclick="addCommand('F3')">F3</button>
-                                    <button onclick="addCommand('F4')">F4</button>
-                                    <button onclick="addCommand('F5')">F5</button>
-                                    <button onclick="addCommand('F6')">F6</button>
-                                    <button onclick="addCommand('F7')">F7</button>
-                                    <button onclick="addCommand('F8')">F8</button>
-                                    <button onclick="addCommand('F9')">F9</button>
-                                    <button onclick="addCommand('F10')">F10</button>
-                                    <button onclick="addCommand('F11')">F11</button>
-                                    <button onclick="addCommand('F12')">F12</button>
+                                    <button data-cmd="F1">F1</button>
+                                    <button data-cmd="F2">F2</button>
+                                    <button data-cmd="F3">F3</button>
+                                    <button data-cmd="F4">F4</button>
+                                    <button data-cmd="F5">F5</button>
+                                    <button data-cmd="F6">F6</button>
+                                    <button data-cmd="F7">F7</button>
+                                    <button data-cmd="F8">F8</button>
+                                    <button data-cmd="F9">F9</button>
+                                    <button data-cmd="F10">F10</button>
+                                    <button data-cmd="F11">F11</button>
+                                    <button data-cmd="F12">F12</button>
                                 </div>
                             </div>
                         </div>
@@ -168,47 +172,47 @@
                                 <h3 data-idx="11">Bulk Entry</h3>
                                 <p class="info-text">Convert multi-line text into STRING or ALTCODE lines.</p>
                                 <textarea id="bulkStringAltcodeInput" rows="3" placeholder="One entry per line"></textarea>
-                                <button id="bulkStringBtn" class="primary-btn">As STRING</button>
-                                <button id="bulkAltcodeBtn" class="primary-btn">As ALTCODE</button>
+                                <button class="primary-btn" id="bulkStringBtn">As STRING</button>
+                                <button class="primary-btn" id="bulkAltcodeBtn">As ALTCODE</button>
                             </div>
 
                             <div class="command-group">
                                 <h3 data-idx="12">Alt Characters · Bulk</h3>
                                 <p class="info-text">Insert multiple ALTCHAR lines.</p>
                                 <textarea id="bulkAltcharInput" rows="3" placeholder="One char code per line"></textarea>
-                                <button id="bulkAltcharBtn" class="primary-btn">As ALTCHAR</button>
+                                <button class="primary-btn" id="bulkAltcharBtn">As ALTCHAR</button>
                             </div>
 
                             <div class="command-group">
                                 <h3 data-idx="13">Main Control Keys</h3>
                                 <div class="btn-group">
-                                    <button onclick="insertCommand('ENTER')">ENTER ↵</button>
-                                    <button onclick="insertCommand('TAB')">TAB ⇥</button>
-                                    <button onclick="insertCommand('SPACE')">SPACE ␣</button>
-                                    <button onclick="insertCommand('BACKSPACE')">BACK ⌫</button>
-                                    <button onclick="insertCommand('CAPSLOCK')">CAPS ⇪</button>
-                                    <button onclick="insertCommand('DELETE')">DEL ⌦</button>
+                                    <button data-cmd="ENTER">ENTER ↵</button>
+                                    <button data-cmd="TAB">TAB ⇥</button>
+                                    <button data-cmd="SPACE">SPACE ␣</button>
+                                    <button data-cmd="BACKSPACE">BACK ⌫</button>
+                                    <button data-cmd="CAPSLOCK">CAPS ⇪</button>
+                                    <button data-cmd="DELETE">DEL ⌦</button>
                                 </div>
                             </div>
 
                             <div class="command-group">
                                 <h3 data-idx="14">Other Control Keys</h3>
                                 <div class="btn-group">
-                                    <button onclick="insertCommand('SYSRQ')">SysRq · Linux</button>
-                                    <button onclick="insertCommand('PRINTSCREEN')">PRTSC</button>
-                                    <button onclick="insertCommand('ESC')">ESC</button>
-                                    <button onclick="insertCommand('PAGEUP')">PG UP</button>
-                                    <button onclick="insertCommand('PAGE DOWN')">PG DN</button>
-                                    <button onclick="insertCommand('NUMLOCK')">NUMLOCK</button>
-                                    <button onclick="insertCommand('SCROLLLOCK')">SCRLK</button>
-                                    <button onclick="insertCommand('HOME')">HOME ↖</button>
-                                    <button onclick="insertCommand('END')">END ↘</button>
-                                    <button onclick="insertCommand('APP')">APP</button>
-                                    <button onclick="insertCommand('BREAK')">BREAK</button>
-                                    <button onclick="insertCommand('PAUSE')">PAUSE</button>
-                                    <button onclick="insertCommand('INSERT')">INSERT</button>
-                                    <button onclick="insertCommand('ESCAPE')">ESCAPE</button>
-                                    <button onclick="insertCommand('MENU')">MENU</button>
+                                    <button data-cmd="SYSRQ">SysRq · Linux</button>
+                                    <button data-cmd="PRINTSCREEN">PRTSC</button>
+                                    <button data-cmd="ESC">ESC</button>
+                                    <button data-cmd="PAGEUP">PG UP</button>
+                                    <button data-cmd="PAGEDOWN">PG DN</button>
+                                    <button data-cmd="NUMLOCK">NUMLOCK</button>
+                                    <button data-cmd="SCROLLLOCK">SCRLK</button>
+                                    <button data-cmd="HOME">HOME ↖</button>
+                                    <button data-cmd="END">END ↘</button>
+                                    <button data-cmd="APP">APP</button>
+                                    <button data-cmd="BREAK">BREAK</button>
+                                    <button data-cmd="PAUSE">PAUSE</button>
+                                    <button data-cmd="INSERT">INSERT</button>
+                                    <button data-cmd="ESCAPE">ESCAPE</button>
+                                    <button data-cmd="MENU">MENU</button>
                                 </div>
                             </div>
                         </div>
@@ -221,11 +225,11 @@
                 <div class="panel-head">
                     <span class="tag">[ OUT ]</span>
                     <h2>Payload Terminal</h2>
-                    <span class="meta"><span class="dot" style="display:inline-block;width:6px;height:6px;background:var(--phosphor);border-radius:50%;margin-right:6px;vertical-align:middle;"></span>LIVE</span>
+                    <span class="meta"><span class="dot" aria-hidden="true"></span>LIVE</span>
                 </div>
                 <div class="panel-body">
                     <div class="terminal-wrap">
-                        <textarea id="output" rows="20" spellcheck="false" placeholder="Your payload will materialize here..."></textarea>
+                        <textarea id="output" rows="20" spellcheck="false" aria-label="Generated payload" placeholder="Your payload will materialize here..."></textarea>
                     </div>
                     <div class="terminal-bar">
                         <span class="stat">LN <strong id="line-count">0</strong></span>
@@ -248,7 +252,7 @@
 
     <!-- GitHub floating note with official GitHub icon -->
     <div class="floating-note-github">
-        <a href="https://github.com/davidlahoz/badusb-flipper-payload-generator/" target="_blank" rel="noopener" class="github-link">
+        <a href="https://github.com/davidlahoz/fz-BadUSB/" target="_blank" rel="noopener" class="github-link">
             <svg height="16" viewBox="0 0 16 16" width="16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.656 0 8.168c0 3.615 2.292 6.675 5.47 7.76.4.074.547-.178.547-.394 0-.19-.007-.693-.01-1.36-2.226.49-2.695-1.094-2.695-1.094-.364-.938-.89-1.188-.89-1.188-.727-.507.055-.497.055-.497.806.058 1.232.84 1.232.84.715 1.258 1.874.894 2.333.683.072-.53.28-.895.508-1.1-1.777-.206-3.644-.92-3.644-4.084 0-.9.317-1.64.84-2.22-.084-.206-.364-1.035.08-2.155 0 0 .67-.22 2.2.84a7.384 7.384 0 0 1 2-.283 7.31 7.31 0 0 1 2 .283c1.53-1.06 2.2-.84 2.2-.84.444 1.12.164 1.95.08 2.155.524.58.84 1.32.84 2.22 0 3.172-1.868 3.875-3.654 4.08.288.256.544.76.544 1.533 0 1.107-.01 2-.01 2.275 0 .218.146.47.55.39C13.71 14.84 16 11.78 16 8.168 16 3.655 12.42 0 8 0z"></path>
             </svg>
@@ -262,7 +266,5 @@
             → BadUSB Docs
         </a>
     </div>
-
-    <script src="script.js"></script>
 </body>
 </html>

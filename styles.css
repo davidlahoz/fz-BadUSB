@@ -3,8 +3,6 @@
    Cyberpunk terminal aesthetic, Flipper Zero brand colors.
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap');
-
 :root {
     /* core */
     --bg:            #0a0806;
@@ -98,60 +96,16 @@ body::after {
 
 ::selection { background: var(--accent); color: #000; }
 
-/* ============================ Top status strip ============================ */
+/* ============================ Status indicator ============================ */
 
-.sys-strip {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.35rem 1.2rem;
-    background: #000;
-    border-bottom: 1px solid var(--border);
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    overflow: hidden;
-    white-space: nowrap;
-}
-
-.sys-strip .seg {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-}
-
-.sys-strip .seg + .seg::before {
-    content: '/';
-    color: var(--text-faint);
-    margin-right: 0.45rem;
-}
-
-.sys-strip .dot {
-    width: 7px;
-    height: 7px;
+.panel-head .dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 6px;
     background: var(--phosphor);
     border-radius: 50%;
-    box-shadow: 0 0 8px var(--phosphor-dim);
-    animation: pulse 1.8s ease-in-out infinite;
-}
-
-.sys-strip .dot.warn { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
-
-.sys-strip .marquee {
-    margin-left: auto;
-    color: var(--text-mute);
-    overflow: hidden;
-    max-width: 40%;
-    text-overflow: ellipsis;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50%      { opacity: 0.3; }
+    vertical-align: middle;
 }
 
 /* ============================ Header / hero ============================ */
@@ -345,15 +299,6 @@ main {
     font-weight: 600;
 }
 
-.panel-head h2 {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: 20px;
-    font-weight: 400;
-    letter-spacing: 0.04em;
-    color: var(--text);
-}
-
 .panel-head .meta {
     margin-left: auto;
     color: var(--text-mute);
@@ -362,9 +307,8 @@ main {
 
 .panel-body { padding: 0.9rem; }
 
-/* legacy h2 hooks (we keep tags but hide native h2 inside panel-head) */
-#commands-section h2,
-#output-section-right h2 { all: unset; }
+/* Panel <h2>s are neutralised so they inherit the .panel-head strip styling. */
+.panel-head h2 { all: unset; }
 
 /* ============================ Command grid ============================ */
 
@@ -852,11 +796,6 @@ footer {
     background: #050403;
 }
 
-footer .marker {
-    color: var(--accent);
-    margin: 0 0.3rem;
-}
-
 /* ============================ Responsive ============================ */
 
 @media (max-width: 1080px) {
@@ -872,7 +811,6 @@ footer .marker {
     }
     .title-group h1 { font-size: 2rem; }
     .commands-grid { grid-template-columns: 1fr; }
-    .sys-strip .marquee { display: none; }
     main { padding: 1rem 0.75rem 5rem; }
     .floating-note-github, .floating-note {
         right: 10px;
